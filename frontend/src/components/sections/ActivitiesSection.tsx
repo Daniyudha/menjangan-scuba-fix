@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { content } from '@/lib/content';
 
 const activityImages = [
-   "/images/hero-1.jpg",
+   "/images/surfing.jpg",
     "/images/free-diving.jpg",
     "/images/dive-course.jpg",
     "/images/snorkeling.jpg"

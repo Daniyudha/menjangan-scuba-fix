@@ -129,8 +129,15 @@ const Header = () => {
 
         {/* Tombol Hamburger di Mobile */}
         <div className="lg:hidden">
-          <button onClick={() => setIsOpen(!isOpen)} className="text-white z-50 relative">
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
+          <button 
+            onClick={() => setIsOpen(!isOpen)} 
+            // Tambahkan kelas dinamis untuk warna teks
+            className={`z-50 relative transition-colors duration-300 ${
+                isScrolled || isOpen ? 'text-black' : 'text-white'
+            }`}
+            aria-label="Toggle menu"
+          >
+            {isOpen ? <X className="text-white" size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </div >

@@ -42,10 +42,11 @@ const AdminHeader = () => {
           className="flex items-center gap-2"
         >
           <Image
+            className="rounded-full"
             src="https://i.pravatar.cc/40"
             alt="Admin Avatar"
-            width={10}
-            height={10}
+            width={40}
+            height={40}
             priority />
 
           {/* <img 

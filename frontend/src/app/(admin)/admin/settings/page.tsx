@@ -2,7 +2,7 @@
 "use client";
 
 import { apiClient } from "@/lib/apiClient";
-import { CheckCircle, Edit2, Facebook, Image as ImageIcon, Instagram, Link as LinkIcon, Save, Twitter, Youtube } from "lucide-react";
+import { CheckCircle, Edit2, Facebook, Image as ImageIcon, Instagram, Link as LinkIcon, Save, Music2, Youtube } from "lucide-react";
 import Image from "next/image";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 
@@ -372,8 +372,8 @@ export default function SettingsPage() {
                                     <input name="facebook" value={settings.socialLinks?.facebook || ''} onChange={(e) => handleChange(e, 'socialLinks')} className="w-full bg-light-gray p-3 rounded-md border border-slate/30" placeholder="Facebook URL" />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-slate mb-1">Twitter</label>
-                                    <input name="twitter" value={settings.socialLinks?.twitter || ''} onChange={(e) => handleChange(e, 'socialLinks')} className="w-full bg-light-gray p-3 rounded-md border border-slate/30" placeholder="Twitter URL" />
+                                    <label className="block text-sm font-medium text-slate mb-1">Tiktok</label>
+                                    <input name="twitter" value={settings.socialLinks?.twitter || ''} onChange={(e) => handleChange(e, 'socialLinks')} className="w-full bg-light-gray p-3 rounded-md border border-slate/30" placeholder="Tiktok URL" />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-slate mb-1">Youtube</label>
@@ -389,7 +389,7 @@ export default function SettingsPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="flex items-center gap-3"><Instagram className="text-slate" /><a href={settings.socialLinks?.instagram || '#'} target="_blank" rel="noreferrer" className="text-slate hover:text-bright-blue underline truncate">{settings.socialLinks?.instagram || "Not set"}</a></div>
                             <div className="flex items-center gap-3"><Facebook className="text-slate" /><a href={settings.socialLinks?.facebook || '#'} target="_blank" rel="noreferrer" className="text-slate hover:text-bright-blue underline truncate">{settings.socialLinks?.facebook || "Not set"}</a></div>
-                            <div className="flex items-center gap-3"><Twitter className="text-slate" /><a href={settings.socialLinks?.twitter || '#'} target="_blank" rel="noreferrer" className="text-slate hover:text-bright-blue underline truncate">{settings.socialLinks?.twitter || "Not set"}</a></div>
+                            <div className="flex items-center gap-3"><Music2 className="text-slate" /><a href={settings.socialLinks?.twitter || '#'} target="_blank" rel="noreferrer" className="text-slate hover:text-bright-blue underline truncate">{settings.socialLinks?.twitter || "Not set"}</a></div>
                             <div className="flex items-center gap-3"><Youtube className="text-slate" /><a href={settings.socialLinks?.youtube || '#'} target="_blank" rel="noreferrer" className="text-slate hover:text-bright-blue underline truncate">{settings.socialLinks?.youtube || "Not set"}</a></div>
                         </div>
                     )}
