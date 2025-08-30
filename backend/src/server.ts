@@ -29,14 +29,15 @@ const corsOptions = {
     credentials: true, 
 };
 
+const allowedOrigins = [
+  'http://localhost:3003',        // saat dev FE
+  'https://menjangan.gegacreative.com'      // domain produksi FE
+];
+
 // app.use(cors(corsOptions));
 app.use(cors({
-    origin: (origin, callback) => {
-        // Selama pengembangan, ini akan mengizinkan semua origin
-        // Di produksi, Anda sebaiknya memiliki daftar domain yang diizinkan
-        callback(null, true);
-    },
-    credentials: true, // Tetap izinkan pengiriman cookie
+  origin: allowedOrigins,
+  credentials: true,
 }));
 
 // ---------------------------------
