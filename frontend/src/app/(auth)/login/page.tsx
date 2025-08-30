@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { FormEvent, useState } from 'react';
 
 export default function LoginPage() {
-  const router = useRouter();
+  // const router = useRouter();
   
   // --- PERBAIKAN UTAMA DI SINI ---
   // State sekarang dimulai dengan string kosong
@@ -30,7 +30,8 @@ export default function LoginPage() {
         });
         // Jika login berhasil, cookie akan diatur secara otomatis.
         // Arahkan ke dashboard.
-        router.push('/admin/dashboard');
+        // router.push('/admin/dashboard');
+        window.location.href = '/admin/dashboard';
     } catch (err: unknown) {
       // apiClient akan melempar error dengan pesan dari server jika login gagal
       setError(err instanceof Error ? err.message : 'An unknown error occurred');
