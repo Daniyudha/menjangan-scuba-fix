@@ -29,7 +29,16 @@ const corsOptions = {
     credentials: true, 
 };
 
-app.use(cors(corsOptions)); // Gunakan konfigurasi baru
+// app.use(cors(corsOptions));
+app.use(cors({
+    origin: (origin, callback) => {
+        // Selama pengembangan, ini akan mengizinkan semua origin
+        // Di produksi, Anda sebaiknya memiliki daftar domain yang diizinkan
+        callback(null, true);
+    },
+    credentials: true, // Tetap izinkan pengiriman cookie
+}));
+
 // ---------------------------------
 
 app.use(express.json());
