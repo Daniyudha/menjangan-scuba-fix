@@ -24,10 +24,13 @@ const AdminHeader = () => {
   const handleLogout = async () => {
     try {
       await apiClient('/auth/logout', { method: 'POST' });
-      window.location.href = '/login';
+      window.location.reload();
     } catch (error) {
       console.error("Logout failed:", error);
-      router.push('/login');
+      // Jika API gagal, fallback-nya adalah membersihkan secara manual
+      // dan mengarahkan ke login.
+      document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      window.location.href = '/login';
     }
   };
 

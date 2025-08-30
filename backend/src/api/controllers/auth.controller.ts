@@ -56,11 +56,18 @@ export const login = async (req: Request, res: Response) => {
 
 // --- LOGOUT ---
 export const logout = (req: Request, res: Response) => {
-    // Logika logout tidak perlu diubah, sudah benar
-    res.cookie('jwt', '', {
+    // --- PERBAIKAN DI SINI ---
+    // Hapus cookie dengan memberikan semua opsi yang mungkin
+    // agar cocok dengan saat cookie dibuat.
+    res.cookie('jwt', 'loggedout', { // Beri nilai 'loggedout' untuk kejelasan
         httpOnly: true,
-        expires: new Date(0),
+        secure: process.env.NODE_ENV !== 'development',
+        sameSite: 'strict',
+        expires: new Date(0), // Atur masa kedaluwarsa ke masa lalu
+        path: '/', // Tentukan path root secara eksplisit
     });
+    
+    // Kirim status sukses yang jelas
     res.status(200).json({ message: 'Logged out successfully' });
 };
 

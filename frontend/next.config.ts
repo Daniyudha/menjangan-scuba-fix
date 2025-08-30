@@ -9,6 +9,13 @@ const nextConfig = {
         port: '8080', // Pastikan port ini sesuai dengan backend Anda
         pathname: '/uploads/**',
       },
+
+      {
+        protocol: 'https',
+        hostname: 'menjangan-be.gegacreative.com',
+        port: '', // Port default untuk https (443), jadi bisa dikosongkan
+        pathname: '/uploads/**', // Izinkan semua gambar dari folder /uploads
+      },
       
       // 2. Aturan untuk Unsplash
       {
