@@ -3,35 +3,40 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  const authToken = request.cookies.get('jwt')?.value;
   const { pathname } = request.nextUrl;
+  const authToken = request.cookies.get('jwt')?.value;
 
-  // --- LOGGING UNTUK DEBUGGING ---
-  console.log('--- Middleware Intercept ---');
-  console.log('Path:', pathname);
-  console.log('Auth Token Found:', authToken ? `"${authToken.substring(0, 15)}..."` : 'No');
-  // --------------------------------
+  console.log(`--- Middleware Triggered for: ${pathname} ---`);
+  console.log(`Auth Token Present: ${authToken ? 'Yes' : 'No'}`);
 
-  const isAdminPath = pathname.startsWith('/admin');
-  const isAuthPath = pathname.startsWith('/login');
+  // Path yang memerlukan otentikasi
+  const protectedPaths = ['/admin'];
+  // Path yang hanya untuk pengguna yang belum login
+  const publicOnlyPaths = ['/login'];
 
-  if (isAdminPath && !authToken) {
-    console.log('Action: Redirecting to /login');
-    console.log('----------------------------\n');
+  const isProtectedPath = protectedPaths.some(path => pathname.startsWith(path));
+  const isPublicOnlyPath = publicOnlyPaths.some(path => pathname.startsWith(path));
+
+  // KASUS 1: Mencoba mengakses halaman yang dilindungi (misal, /admin) TAPI tidak punya token
+  if (isProtectedPath && !authToken) {
+    console.log('Action: Not authenticated for a protected path. Redirecting to /login.');
+    console.log('-------------------------------------\n');
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  if (isAuthPath && authToken) {
-    console.log('Action: Redirecting to /admin/dashboard');
-    console.log('----------------------------\n');
+  // KASUS 2: Mencoba mengakses halaman login TAPI sudah punya token
+  if (isPublicOnlyPath && authToken) {
+    console.log('Action: Already authenticated. Redirecting to /admin/dashboard.');
+    console.log('-------------------------------------\n');
     return NextResponse.redirect(new URL('/admin/dashboard', request.url));
   }
-
-  console.log('Action: Allowing request');
-  console.log('----------------------------\n');
+  
+  console.log('Action: Allowed.');
+  console.log('-------------------------------------\n');
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/login'],
+  // Jalankan middleware pada semua path KECUALI aset statis dan API
+  matcher: '/((?!api|_next/static|_next/image|favicon.ico).*)',
 }

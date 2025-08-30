@@ -35,6 +35,7 @@ export default function LoginPage() {
     } catch (err: unknown) {
       // apiClient akan melempar error dengan pesan dari server jika login gagal
       setError(err instanceof Error ? err.message : 'An unknown error occurred');
+      setIsLoading(false);
     } finally {
       setIsLoading(false);
     }
