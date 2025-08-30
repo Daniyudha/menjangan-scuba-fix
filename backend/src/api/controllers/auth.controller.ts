@@ -12,10 +12,11 @@ const generateToken = (res: Response, userId: string) => {
 
     res.cookie('jwt', token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV !== 'development',
-        sameSite: 'strict',
+        secure: process.env.NODE_ENV === 'production', // true hanya di server dengan HTTPS
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // 'none' agar bisa cross-origin
         maxAge: 24 * 60 * 60 * 1000,
     });
+
 };
 
 // --- LOGIN ---
@@ -35,7 +36,7 @@ export const login = async (req: Request, res: Response) => {
         // 4. Jika pengguna ada DAN passwordnya cocok
         if (user && (await bcrypt.compare(password, user.password))) {
             generateToken(res, user.id); // Buat token dengan ID pengguna yang sebenarnya
-            
+
             // Kirim kembali data pengguna tanpa password
             res.status(200).json({
                 id: user.id,
@@ -66,7 +67,7 @@ export const logout = (req: Request, res: Response) => {
         expires: new Date(0), // Atur masa kedaluwarsa ke masa lalu
         path: '/', // Tentukan path root secara eksplisit
     });
-    
+
     // Kirim status sukses yang jelas
     res.status(200).json({ message: 'Logged out successfully' });
 };

@@ -48,8 +48,8 @@ const Sidebar = () => {
               title={isMinimized ? link.label : ''}
               className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
                   isActive 
-                    ? 'bg-light-navy text-white font-bold'
-                    : 'text-light-slate hover:bg-light-navy/50 hover:text-white'
+                    ? 'bg-blue-500 text-white font-bold'
+                    : 'text-light-slate hover:text-blue-400'
               } ${isMinimized ? 'justify-center' : ''}`}
             >
               <link.icon size={20} />
