@@ -22,24 +22,17 @@ const PORT = process.env.PORT || 8080;
 
 // --- PERBAIKAN UTAMA DI SINI ---
 // Konfigurasi CORS yang lebih spesifik
-const corsOptions = {
-    // Izinkan hanya origin dari frontend Anda
-    origin: 'http://localhost:3003', 
-    // Izinkan pengiriman cookie
-    credentials: true, 
-};
-
 const allowedOrigins = [
-  'http://localhost:3003', 
-  'https://menjangan.gegacreative.com' 
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'https://menjangan.gegacreative.com' 
 ];
 
-// app.use(cors(corsOptions));
-app.use(cors({
-  origin: allowedOrigins,
-  credentials: true,
-}));
-
+const corsOptions = {
+    origin: allowedOrigins,
+    credentials: true,
+};
+app.use(cors(corsOptions));
 // ---------------------------------
 
 app.use(express.json());

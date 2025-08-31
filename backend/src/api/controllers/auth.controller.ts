@@ -13,16 +13,16 @@ const generateToken = (res: Response, userId: string) => {
 
     const isProduction = process.env.NODE_ENV === 'production';
 
-    // 2. Tentukan tipe 'sameSite' secara eksplisit
-    const sameSiteOption: 'strict' | 'none' = isProduction ? 'none' : 'strict';
-
-    const cookieOptions: CookieOptions = { // Gunakan tipe CookieOptions
+    const cookieOptions: CookieOptions = {
         httpOnly: true,
         secure: isProduction,
-        sameSite: sameSiteOption,
-        maxAge: 24 * 60 * 60 * 1000,
+        sameSite: isProduction ? 'none' : 'strict',
         path: '/',
-        domain: isProduction ? '.gegacreative.com' : undefined, 
+        // --- PASTIKAN BAGIAN INI BENAR ---
+        // Titik di depan '.gegacreative.com' sangat penting.
+        // Ini memberitahu browser bahwa cookie valid untuk semua subdomain.
+        domain: isProduction ? '.gegacreative.com' : undefined,
+        maxAge: 24 * 60 * 60 * 1000,
     };
 
     res.cookie('jwt', token, cookieOptions);
@@ -68,7 +68,7 @@ export const login = async (req: Request, res: Response) => {
 // --- LOGOUT ---
 export const logout = (req: Request, res: Response) => {
     const isProduction = process.env.NODE_ENV === 'production';
-    
+
     const sameSiteOption: 'strict' | 'none' = isProduction ? 'none' : 'strict';
 
     const cookieOptions: CookieOptions = {
@@ -79,7 +79,7 @@ export const logout = (req: Request, res: Response) => {
         path: '/',
         domain: isProduction ? '.gegacreative.com' : undefined,
     };
-    
+
     res.cookie('jwt', '', cookieOptions);
     res.status(200).json({ message: 'Logged out successfully' });
 };

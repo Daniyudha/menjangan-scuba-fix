@@ -67,7 +67,7 @@ export default function LoginPage() {
               id="email"
               name="email"
               required
-              placeholder="admin@menjanganscuba.com" // Placeholder sebagai petunjuk
+              placeholder="example@mail.com" // Placeholder sebagai petunjuk
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-gray-100 p-3 rounded-md border border-gray-300 text-gray-900 focus:ring-2 focus:ring-bright-blue transition" 
