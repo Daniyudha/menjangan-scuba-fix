@@ -8,6 +8,7 @@ export function middleware(request: NextRequest) {
 
   console.log(`--- Middleware Triggered for: ${pathname} ---`);
   console.log(`Auth Token Present: ${authToken ? 'Yes' : 'No'}`);
+  console.log(`jwt: jwt=${authToken}`);
 
   // Path yang memerlukan otentikasi
   const protectedPaths = ['/admin'];
