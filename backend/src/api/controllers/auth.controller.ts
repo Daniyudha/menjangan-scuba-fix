@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs'; // 1. Import bcrypt untuk membandingkan password
 import prisma from '../../config/prisma'; // 2. Import Prisma Client
+import { CookieOptions } from 'express';
 
 // Fungsi generateToken tidak perlu diubah, sudah bagus
 const generateToken = (res: Response, userId: string) => {
@@ -10,14 +11,23 @@ const generateToken = (res: Response, userId: string) => {
         expiresIn: '1d',
     });
 
-    res.cookie('jwt', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // true hanya di server dengan HTTPS
-        sameSite: "none",
-        maxAge: 24 * 60 * 60 * 1000,
-    });
+    const isProduction = process.env.NODE_ENV === 'production';
 
+    // 2. Tentukan tipe 'sameSite' secara eksplisit
+    const sameSiteOption: 'strict' | 'none' = isProduction ? 'none' : 'strict';
+
+    const cookieOptions: CookieOptions = { // Gunakan tipe CookieOptions
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: sameSiteOption,
+        maxAge: 24 * 60 * 60 * 1000,
+        path: '/',
+        domain: isProduction ? '.gegacreative.com' : undefined, 
+    };
+
+    res.cookie('jwt', token, cookieOptions);
 };
+
 
 // --- LOGIN ---
 export const login = async (req: Request, res: Response) => {
@@ -57,18 +67,20 @@ export const login = async (req: Request, res: Response) => {
 
 // --- LOGOUT ---
 export const logout = (req: Request, res: Response) => {
-    // --- PERBAIKAN DI SINI ---
-    // Hapus cookie dengan memberikan semua opsi yang mungkin
-    // agar cocok dengan saat cookie dibuat.
-    res.cookie('jwt', 'loggedout', { // Beri nilai 'loggedout' untuk kejelasan
-        httpOnly: true,
-        secure: process.env.NODE_ENV !== 'development',
-        sameSite: 'strict',
-        expires: new Date(0), // Atur masa kedaluwarsa ke masa lalu
-        path: '/', // Tentukan path root secara eksplisit
-    });
+    const isProduction = process.env.NODE_ENV === 'production';
+    
+    const sameSiteOption: 'strict' | 'none' = isProduction ? 'none' : 'strict';
 
-    // Kirim status sukses yang jelas
+    const cookieOptions: CookieOptions = {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: sameSiteOption,
+        expires: new Date(0),
+        path: '/',
+        domain: isProduction ? '.gegacreative.com' : undefined,
+    };
+    
+    res.cookie('jwt', '', cookieOptions);
     res.status(200).json({ message: 'Logged out successfully' });
 };
 

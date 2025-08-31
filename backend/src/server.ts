@@ -22,24 +22,23 @@ const PORT = process.env.PORT || 8080;
 
 // --- PERBAIKAN UTAMA DI SINI ---
 // Konfigurasi CORS yang lebih spesifik
+const corsOptions = {
+    // Izinkan hanya origin dari frontend Anda
+    origin: 'http://localhost:3003', 
+    // Izinkan pengiriman cookie
+    credentials: true, 
+};
+
 const allowedOrigins = [
-    'http://localhost:3000',
-    'https://menjangan.gegacreative.com' // <-- TAMBAHKAN DOMAIN FRONTEND PRODUKSI ANDA
+  'http://localhost:3003', 
+  'https://menjangan.gegacreative.com' 
 ];
 
-const corsOptions = {
-    // Gunakan fungsi untuk memeriksa origin secara dinamis
-    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-        // Izinkan permintaan tanpa 'origin' (seperti dari Postman/Insomnia)
-        // atau jika origin ada di dalam daftar yang diizinkan.
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    credentials: true, // Ini sangat penting untuk cookie
-};
+// app.use(cors(corsOptions));
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+}));
 
 // ---------------------------------
 
