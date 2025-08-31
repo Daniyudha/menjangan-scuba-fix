@@ -25,7 +25,6 @@ const PORT = process.env.PORT || 8080;
 const allowedOrigins = [
     'http://192.168.1.106:3000',
     'http://localhost:3000',
-    'http://localhost:3001',
     'http://localhost:3003',
     'https://menjangan.gegacreative.com', // Pastikan ini cocok dengan domain frontend Anda
     'https://www.menjangan.gegacreative.com' // Versi www jika perlu

@@ -22,21 +22,16 @@ export default function LoginPage() {
     e.preventDefault();
     setError(null);
     setIsLoading(true);
-
     try {
+        // Kita tidak perlu menyimpan token, backend akan mengatur cookie
         await apiClient('/auth/login', {
             method: 'POST',
             body: JSON.stringify({ email, password }),
         });
-        // Jika login berhasil, cookie akan diatur secara otomatis.
-        // Arahkan ke dashboard.
-        // router.push('/admin/dashboard');
+        // Lakukan full page reload agar middleware bisa membaca cookie baru
         window.location.href = '/admin/dashboard';
-    } catch (err: unknown) {
-      // apiClient akan melempar error dengan pesan dari server jika login gagal
-      setError(err instanceof Error ? err.message : 'An unknown error occurred');
-      setIsLoading(false);
-    } finally {
+    } catch (err: any) {
+      setError(err.message);
       setIsLoading(false);
     }
   };

@@ -7,21 +7,16 @@ import { CookieOptions } from 'express';
 
 // Fungsi generateToken tidak perlu diubah, sudah bagus
 const generateToken = (res: Response, userId: string) => {
-    const token = jwt.sign({ userId }, process.env.JWT_SECRET!, {
-        expiresIn: '1d',
-    });
-
+    const token = jwt.sign({ userId }, process.env.JWT_SECRET!, { expiresIn: '1d' });
     const isProduction = process.env.NODE_ENV === 'production';
-
     const cookieOptions: CookieOptions = {
         httpOnly: true,
-        secure: true, 
-        sameSite: 'none' as const,
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax',
         maxAge: 24 * 60 * 60 * 1000,
         path: '/',
-        domain: isProduction ? '.gegacreative.com' : undefined, 
+        domain: isProduction ? '.gegacreative.com' : undefined,
     };
-
     res.cookie('jwt', token, cookieOptions);
 };
 
@@ -30,53 +25,29 @@ const generateToken = (res: Response, userId: string) => {
 export const login = async (req: Request, res: Response) => {
     try {
         const { email, password } = req.body;
-
-        if (!email || !password) {
-            return res.status(400).json({ message: "Please provide email and password." });
-        }
-
-        // 3. Cari pengguna di database berdasarkan email
-        const user = await prisma.user.findUnique({
-            where: { email }
-        });
-
-        // 4. Jika pengguna ada DAN passwordnya cocok
+        const user = await prisma.user.findUnique({ where: { email } });
         if (user && (await bcrypt.compare(password, user.password))) {
-            generateToken(res, user.id); // Buat token dengan ID pengguna yang sebenarnya
-
-            // Kirim kembali data pengguna tanpa password
-            res.status(200).json({
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                role: user.role,
-            });
+            generateToken(res, user.id);
+            res.status(200).json({ id: user.id, name: user.name, email: user.email });
         } else {
-            // Jika pengguna tidak ada ATAU password salah, kirim pesan error yang sama
-            // untuk alasan keamanan (tidak memberi tahu penyerang mana yang salah)
             res.status(401).json({ message: "Invalid email or password" });
         }
-    } catch (error) {
-        console.error("Login error:", error);
-        res.status(500).json({ message: "Server error during login." });
-    }
+    } catch (error) { res.status(500).json({ message: "Server error" }); }
 };
 
 // --- LOGOUT ---
 export const logout = (req: Request, res: Response) => {
-    const isProduction = process.env.NODE_ENV === 'production';
-
     // Opsi untuk menghapus cookie HARUS SAMA PERSIS
+    const isProduction = process.env.NODE_ENV === 'production';
     const cookieOptions: CookieOptions = {
         httpOnly: true,
         secure: isProduction,
         sameSite: isProduction ? 'none' : 'lax',
-        expires: new Date(0), // Atur masa kedaluwarsa ke masa lalu
+        expires: new Date(0),
         path: '/',
         domain: isProduction ? '.gegacreative.com' : undefined,
     };
-    
-    res.cookie('jwt', '', { ...cookieOptions, expires: new Date(0) });
+    res.cookie('jwt', '', cookieOptions);
     res.status(200).json({ message: 'Logged out successfully' });
 };
 
