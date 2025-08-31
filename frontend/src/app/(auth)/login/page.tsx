@@ -5,6 +5,7 @@ import { apiClient } from '@/lib/apiClient';
 import { Eye, EyeOff, Fish } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { FormEvent, useState } from 'react';
+import Cookies from 'js-cookie';
 
 export default function LoginPage() {
   // const router = useRouter();
@@ -20,20 +21,21 @@ export default function LoginPage() {
 
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setIsLoading(true);
     try {
-        // Kita tidak perlu menyimpan token, backend akan mengatur cookie
-        await apiClient('/auth/login', {
+        const data = await apiClient('/auth/login', {
             method: 'POST',
             body: JSON.stringify({ email, password }),
         });
-        // Lakukan full page reload agar middleware bisa membaca cookie baru
-        window.location.href = '/admin/dashboard';
-    } catch (err: any) {
-      setError(err.message);
-      setIsLoading(false);
-    }
+        if (data.token) {
+            // Simpan token utama di localStorage
+            localStorage.setItem('jwt', data.token);
+            // Buat 'cookie sinyal' sederhana untuk middleware
+            Cookies.set('auth-signal', 'true', { expires: 1 }); // Kedaluwarsa 1 hari
+            window.location.href = '/admin/dashboard';
+        } else {
+            throw new Error('Login response did not include a token.');
+        }
+    } catch (err: any) { /* ... */ }
   };
 
   return (

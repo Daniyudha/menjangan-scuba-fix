@@ -2,39 +2,52 @@
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api';
 
-// Ini adalah fungsi pembantu 'fetch' kita yang baru
 export const apiClient = async (endpoint: string, options: RequestInit = {}) => {
-    // Gabungkan URL dasar dengan endpoint spesifik
+    // 1. Definisikan variabel 'url' dengan benar
     const url = `${API_URL}${endpoint}`;
+    
+    let token = null;
+    if (typeof window !== 'undefined') {
+        token = localStorage.getItem('jwt');
+    }
 
-    // Siapkan header default
-    const headers = {
+    const headers: Record<string, string> = {
         'Content-Type': 'application/json',
-        ...options.headers,
     };
+    
+    if (options.headers) {
+        Object.assign(headers, options.headers);
+    }
+    
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
 
-    // Siapkan konfigurasi fetch, selalu sertakan credentials
+    // Hapus 'credentials' karena kita menggunakan metode token
     const config: RequestInit = {
         ...options,
         headers,
-        credentials: 'include', // <-- KUNCI UTAMA
     };
 
-    // Lakukan panggilan fetch
+    // Lakukan panggilan fetch dengan variabel 'url' yang sudah didefinisikan
     const response = await fetch(url, config);
 
-    // Tangani respons
-    if (!response.ok) {
-        // Coba baca pesan error dari body JSON
-        const errorData = await response.json().catch(() => ({ message: `HTTP error! Status: ${response.status}` }));
-        throw new Error(errorData.message || 'An unknown error occurred.');
-    }
-
-    // Jika statusnya 204 (No Content), seperti pada DELETE, kembalikan null
+    // 2. Logika penanganan respons yang lebih kuat
     if (response.status === 204) {
-        return null;
+        return null; // Handle No Content
     }
 
-    // Jika ada konten, parse sebagai JSON
-    return response.json();
+    // Coba parse body sebagai JSON
+    const data = await response.json().catch(() => {
+        // Jika body kosong atau bukan JSON (seperti saat error 500),
+        // jangan crash, lempar error dengan status teks
+        throw new Error(response.statusText || `Request failed with status ${response.status}`);
+    });
+    
+    // Jika respons TIDAK ok (misal: 401, 404, 500), lempar error dengan pesan dari server
+    if (!response.ok) {
+        throw new Error(data.message || 'An unknown API error occurred.');
+    }
+
+    return data;
 };

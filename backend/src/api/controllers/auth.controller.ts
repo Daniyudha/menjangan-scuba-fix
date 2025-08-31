@@ -27,8 +27,8 @@ export const login = async (req: Request, res: Response) => {
         const { email, password } = req.body;
         const user = await prisma.user.findUnique({ where: { email } });
         if (user && (await bcrypt.compare(password, user.password))) {
-            generateToken(res, user.id);
-            res.status(200).json({ id: user.id, name: user.name, email: user.email });
+            const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, { expiresIn: '1d' });
+            res.status(200).json({ token, user: { id: user.id, name: user.name, email: user.email } });
         } else {
             res.status(401).json({ message: "Invalid email or password" });
         }
@@ -37,18 +37,7 @@ export const login = async (req: Request, res: Response) => {
 
 // --- LOGOUT ---
 export const logout = (req: Request, res: Response) => {
-    // Opsi untuk menghapus cookie HARUS SAMA PERSIS
-    const isProduction = process.env.NODE_ENV === 'production';
-    const cookieOptions: CookieOptions = {
-        httpOnly: true,
-        secure: isProduction,
-        sameSite: isProduction ? 'none' : 'lax',
-        expires: new Date(0),
-        path: '/',
-        domain: isProduction ? '.gegacreative.com' : undefined,
-    };
-    res.cookie('jwt', '', cookieOptions);
-    res.status(200).json({ message: 'Logged out successfully' });
+    res.status(200).json({ message: 'Logout handled by client' });
 };
 
 // --- (Opsional) Fungsi untuk mendapatkan data pengguna saat ini ---

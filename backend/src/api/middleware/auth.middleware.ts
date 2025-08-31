@@ -12,15 +12,14 @@ declare global {
 }
 
 export const protect = (req: Request, res: Response, next: NextFunction) => {
-    const token = req.cookies.jwt; // <-- Baca dari cookie
-    if (!token) {
-        return res.status(401).json({ message: 'Not authorized, no token' });
+    let token;
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+        try {
+            token = req.headers.authorization.split(' ')[1];
+            const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
+            req.user = { userId: decoded.userId };
+            next();
+        } catch (error) { /* ... */ }
     }
-    try {
-        const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
-        req.user = { userId: decoded.userId };
-        next();
-    } catch (error) {
-        res.status(401).json({ message: 'Not authorized, token failed' });
-    }
+    if (!token) { /* ... */ }
 };

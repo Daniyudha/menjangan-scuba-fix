@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { ChevronDown, LogOut } from 'lucide-react';
 import { apiClient } from '@/lib/apiClient';
 import Image from 'next/image';
+import Cookies from 'js-cookie';
 
 const AdminHeader = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -21,12 +22,10 @@ const AdminHeader = () => {
     return title.charAt(0).toUpperCase() + title.slice(1);
   };
 
-  const handleLogout = async () => {
-    try {
-      await apiClient('/auth/logout', { method: 'POST' });
-      // Lakukan full page reload agar middleware melihat cookie sudah hilang
-      window.location.href = '/login';
-    } catch (error) { /* ... */ }
+  const handleLogout = () => {
+    localStorage.removeItem('jwt');
+    Cookies.remove('auth-signal'); // Hapus cookie sinyal
+    window.location.href = '/login';
   };
 
   return (
