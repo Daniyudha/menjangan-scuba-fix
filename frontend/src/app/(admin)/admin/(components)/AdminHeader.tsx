@@ -2,16 +2,14 @@
 "use client";
 
 import { useState } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { ChevronDown, LogOut } from 'lucide-react';
-import { apiClient } from '@/lib/apiClient';
 import Image from 'next/image';
 import Cookies from 'js-cookie';
 
 const AdminHeader = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const pathname = usePathname();
-  const router = useRouter();
 
   const getPageTitle = () => {
     const pathParts = pathname.split('/').filter(p => p);

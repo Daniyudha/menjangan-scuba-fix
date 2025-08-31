@@ -3,15 +3,10 @@
 
 import { apiClient } from '@/lib/apiClient';
 import { Eye, EyeOff, Fish } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { FormEvent, useState } from 'react';
 import Cookies from 'js-cookie';
 
 export default function LoginPage() {
-  // const router = useRouter();
-  
-  // --- PERBAIKAN UTAMA DI SINI ---
-  // State sekarang dimulai dengan string kosong
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   
@@ -35,7 +30,15 @@ export default function LoginPage() {
         } else {
             throw new Error('Login response did not include a token.');
         }
-    } catch (err: any) { /* ... */ }
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unknown error occurred.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
