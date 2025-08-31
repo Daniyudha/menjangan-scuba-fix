@@ -23,16 +23,19 @@ const PORT = process.env.PORT || 8080;
 // --- PERBAIKAN UTAMA DI SINI ---
 // Konfigurasi CORS yang lebih spesifik
 const allowedOrigins = [
+    'http://192.168.1.106:3000',
     'http://localhost:3000',
     'http://localhost:3001',
-    'https://menjangan.gegacreative.com' 
+    'http://localhost:3003',
+    'https://menjangan.gegacreative.com', // Pastikan ini cocok dengan domain frontend Anda
+    'https://www.menjangan.gegacreative.com' // Versi www jika perlu
 ];
 
-const corsOptions = {
-    origin: allowedOrigins,
-    credentials: true,
-};
-app.use(cors(corsOptions));
+// Gunakan array tersebut di dalam konfigurasi cors
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+}));
 // ---------------------------------
 
 app.use(express.json());

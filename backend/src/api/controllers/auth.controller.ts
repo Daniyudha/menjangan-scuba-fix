@@ -15,14 +15,15 @@ const generateToken = (res: Response, userId: string) => {
 
     const cookieOptions: CookieOptions = {
         httpOnly: true,
-        secure: isProduction,
-        sameSite: isProduction ? 'none' : 'strict',
-        path: '/',
-        // --- PASTIKAN BAGIAN INI BENAR ---
-        // Titik di depan '.gegacreative.com' sangat penting.
-        // Ini memberitahu browser bahwa cookie valid untuk semua subdomain.
-        domain: isProduction ? '.gegacreative.com' : undefined,
+        // 'secure' WAJIB true jika sameSite='none'
+        secure: isProduction, 
+        // 'sameSite' harus 'none' untuk cross-subdomain di produksi (HTTPS),
+        // dan 'lax' di development untuk kemudahan (beberapa browser memblokir 'none' di http)
+        sameSite: isProduction ? 'none' : 'lax',
         maxAge: 24 * 60 * 60 * 1000,
+        path: '/',
+        // Domain harus diatur agar cookie bisa diakses oleh semua subdomain
+        domain: isProduction ? '.gegacreative.com' : undefined, 
     };
 
     res.cookie('jwt', token, cookieOptions);
@@ -69,18 +70,17 @@ export const login = async (req: Request, res: Response) => {
 export const logout = (req: Request, res: Response) => {
     const isProduction = process.env.NODE_ENV === 'production';
 
-    const sameSiteOption: 'strict' | 'none' = isProduction ? 'none' : 'strict';
-
+    // Opsi untuk menghapus cookie HARUS SAMA PERSIS
     const cookieOptions: CookieOptions = {
         httpOnly: true,
         secure: isProduction,
-        sameSite: sameSiteOption,
-        expires: new Date(0),
+        sameSite: isProduction ? 'none' : 'lax',
+        expires: new Date(0), // Atur masa kedaluwarsa ke masa lalu
         path: '/',
         domain: isProduction ? '.gegacreative.com' : undefined,
     };
-
-    res.cookie('jwt', '', cookieOptions);
+    
+    res.cookie('jwt', '', { ...cookieOptions, expires: new Date(0) });
     res.status(200).json({ message: 'Logged out successfully' });
 };
 
