@@ -13,14 +13,14 @@ interface RecentSubmission { id: string; name: string; email: string; message: s
 interface RecentArticle { id: string; title: string; date: string; }
 
 interface DashboardStats {
-  packageCount: number;
-  articleCount: number;
-  galleryImageCount: number;
-  testimonialCount: number;
-  heroHeadlines: HeroSlide[];
-  experienceMedia: ExperienceData;
-  recentArticles: RecentArticle[];
-  recentSubmissions: RecentSubmission[];
+    packageCount: number;
+    articleCount: number;
+    galleryImageCount: number;
+    testimonialCount: number;
+    heroHeadlines: HeroSlide[];
+    experienceMedia: ExperienceData;
+    recentArticles: RecentArticle[];
+    recentSubmissions: RecentSubmission[];
 }
 
 export default function DashboardPage() {
@@ -34,8 +34,19 @@ export default function DashboardPage() {
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const response = await fetch(`${apiUrl}/dashboard`);
-                if (!response.ok) throw new Error('Failed to fetch dashboard data.');
+                const response = await fetch(`${apiUrl}/dashboard`, {
+                    method: 'GET',
+                    credentials: 'include', // ⬅️ ini penting agar cookie JWT ikut
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        // Kalau belum login, arahkan ke halaman login
+                        window.location.href = '/admin/login';
+                    }
+                    throw new Error('Failed to fetch dashboard data.');
+                }
+
                 const data = await response.json();
                 setStats(data);
             } catch (err: unknown) {
@@ -46,6 +57,7 @@ export default function DashboardPage() {
         };
         fetchStats();
     }, [apiUrl]);
+
 
     if (loading) {
         return (
@@ -103,9 +115,9 @@ export default function DashboardPage() {
                         </ul>
                     </div>
                 </div>
-                
+
                 <div className="bg-white p-6 rounded-lg shadow-lg flex flex-col">
-                     <div className="flex justify-between items-center mb-4">
+                    <div className="flex justify-between items-center mb-4">
                         <h2 className="text-xl font-bold text-dark-navy">Experience Section Media</h2>
                         <Link href="/admin/settings" className="text-sm font-semibold text-slate hover:text-blue-400 flex items-center gap-1">
                             <Edit2 size={14} /> Edit
@@ -113,23 +125,23 @@ export default function DashboardPage() {
                     </div>
                     <div className="flex-grow space-y-4">
                         <div className="flex items-center gap-2">
-                           <p className="font-medium text-dark-navy w-24">Video URL:</p>
-                           <a href={stats.experienceMedia?.videoUrl} className="text-bright-blue hover:underline text-sm truncate" target="_blank" rel="noreferrer">
+                            <p className="font-medium text-dark-navy w-24">Video URL:</p>
+                            <a href={stats.experienceMedia?.videoUrl} className="text-bright-blue hover:underline text-sm truncate" target="_blank" rel="noreferrer">
                                 {stats.experienceMedia?.videoUrl || 'Not set'}
-                           </a>
+                            </a>
                         </div>
                         <div className="flex items-start gap-2">
-                           <p className="font-medium text-dark-navy w-24">Image:</p>
-                           {stats.experienceMedia?.imageUrl ? (
-                               <div className="relative w-60 h-30 rounded-md overflow-hidden border">
-                                   <Image 
-                                        src={`${baseUrl}${stats.experienceMedia.imageUrl}`} 
+                            <p className="font-medium text-dark-navy w-24">Image:</p>
+                            {stats.experienceMedia?.imageUrl ? (
+                                <div className="relative w-60 h-30 rounded-md overflow-hidden border">
+                                    <Image
+                                        src={`${baseUrl}${stats.experienceMedia.imageUrl}`}
                                         alt="Experience Preview"
                                         layout="fill"
                                         objectFit="cover"
-                                   />
-                               </div>
-                           ) : ( <span className="text-sm text-slate">Not set</span> )}
+                                    />
+                                </div>
+                            ) : (<span className="text-sm text-slate">Not set</span>)}
                         </div>
                     </div>
                 </div>
@@ -155,7 +167,7 @@ export default function DashboardPage() {
 
                 <div className="bg-white p-6 rounded-lg shadow-lg">
                     <h2 className="text-xl font-bold text-dark-navy mb-4">Recent Submissions</h2>
-                     <div className="space-y-4">
+                    <div className="space-y-4">
                         {stats.recentSubmissions && stats.recentSubmissions.length > 0 ? (
                             stats.recentSubmissions.map(sub => (
                                 <div key={sub.id} className="text-sm border-b border-slate/10 pb-2 last:border-b-0">
