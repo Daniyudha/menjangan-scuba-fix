@@ -15,14 +15,10 @@ const generateToken = (res: Response, userId: string) => {
 
     const cookieOptions: CookieOptions = {
         httpOnly: true,
-        // 'secure' WAJIB true jika sameSite='none'
-        secure: isProduction, 
-        // 'sameSite' harus 'none' untuk cross-subdomain di produksi (HTTPS),
-        // dan 'lax' di development untuk kemudahan (beberapa browser memblokir 'none' di http)
-        sameSite: isProduction ? 'none' : 'lax',
+        secure: true, 
+        sameSite: 'none' as const,
         maxAge: 24 * 60 * 60 * 1000,
         path: '/',
-        // Domain harus diatur agar cookie bisa diakses oleh semua subdomain
         domain: isProduction ? '.gegacreative.com' : undefined, 
     };
 
