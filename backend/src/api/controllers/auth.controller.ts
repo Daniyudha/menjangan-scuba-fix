@@ -13,7 +13,7 @@ const generateToken = (res: Response, userId: string) => {
     res.cookie('jwt', token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production', // true hanya di server dengan HTTPS
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // 'none' agar bisa cross-origin
+        sameSite: "none",
         maxAge: 24 * 60 * 60 * 1000,
     });
 
